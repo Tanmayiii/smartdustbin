@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Garbage Monitoring System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            border: 2px solid #ddd;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+        }
+        .header {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .status {
+            display: inline-block;
+            padding: 10px;
+            background-color: red;
+            color: white;
+            border-radius: 5px;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        .garbage-bin {
+            width: 100px;
+            height: 200px;
+            border: 2px solid #333;
+            border-radius: 10px;
+            margin: 20px auto;
+            position: relative;
+        }
+        .lid {
+            width: 100px;
+            height: 30px;
+            background-color: #333;
+            position: absolute;
+            top: -30px;
+            left: 0;
+            border-radius: 10px 10px 0 0;
+        }
+        .level {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            background-color: green;
+            transition: height 0.5s ease-in-out;
+            border-radius: 0 0 10px 10px;
+        }
+        .garbage-level {
+            font-size: 30px;
+            margin-top: 20px;
+        }
+        .details {
+            font-size: 14px;
+            margin-top: 10px;
+            color: #777;
+        }
+    </style>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">SMART GARBAGE MONITORING SYSTEM USING IOT</div>
+        <div id="status" class="status">Garbage Bin is empty!</div>
+        <div class="garbage-bin">
+            <div class="lid"></div>
+            <div id="level-indicator" class="level"></div>
+        </div>
+        <div class="garbage-level">GARBAGE BIN LEVEL</div>
+        <div class="details">Level: <span id="garbage-level-value">0%</span> | Last updated: <span id="update-time">N/A</span></div>
+    </div>
+
+    <script>
+        // Replace with your Firebase configuration details
+        const firebaseConfig = {
+    apiKey: "AIzaSyCju9JMSFpH02eJvhZ_93_gG_OXT_S5K-w",
+    authDomain: "smartwastemanagement-b31bf.firebaseapp.com",
+    databaseURL: "https://smartwastemanagement-b31bf-default-rtdb.firebaseio.com",
+    projectId: "smartwastemanagement-b31bf",
+    storageBucket: "smartwastemanagement-b31bf.appspot.com",
+    messagingSenderId: "355500925684",
+    appId: "1:355500925684:web:da885303abb59aa8ccb4a1",
+    measurementId: "G-Z75Z2NX36G"
+  };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Reference to the garbage level node
+        const garbageLevelRef = database.ref('garbage-level');
+
+        // Listen for changes in the garbage level and update UI
+        garbageLevelRef.on('value', (snapshot) => {
+            const level = snapshot.val();
+            updateGarbageLevel(level);
+        });
+
+        // Update UI based on garbage level
+        function updateGarbageLevel(level) {
+            const levelIndicator = document.getElementById('level-indicator');
+            const levelValue = document.getElementById('garbage-level-value');
+            const updateTime = document.getElementById('update-time');
+            const status = document.getElementById('status');
+
+            // Update the height of the level indicator based on the garbage level
+            levelIndicator.style.height = `${level}%`;
+            levelValue.textContent = `${level}%`;
+
+            // Update the status message
+            if (level >= 75) {
+                status.textContent = "Garbage Bin is almost full!";
+                status.style.backgroundColor = 'red';
+            } else {
+                status.textContent = "Garbage Bin is empty!";
+                status.style.backgroundColor = 'green';
+            }
+
+            // Update the last updated time
+            const now = new Date();
+            updateTime.textContent = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+        }
+    </script>
+</body>
+</html>
